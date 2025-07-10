@@ -1,75 +1,87 @@
-# Subject-Change-Request-Problem
-# 📘 Subject Change Request System – MySQL Assignment
+==============================================
+           SUBJECT CHANGE REQUEST SYSTEM
+                 MySQL Assignment
+==============================================
 
-## 📌 Problem Statement
+Author: Prathamesh Lad
+Date: July 2025
+Database: MySQL
+Project Type: Stored Procedure Based Automation
+==============================================
 
-A college needs a system to **track and maintain the history of elective subject changes** made by students. At the beginning of the academic year, students may switch their elective subjects, and the college must preserve the **entire change timeline**.
+📌 PROBLEM STATEMENT
+----------------------------------------------
+A college requires a system to manage and track students' Open Elective subject changes while maintaining the complete history of their subject selections.
 
-### ✅ Key Requirements:
-- Each student can have only **one active subject** (marked with `Is_valid = 1`) at a time.
-- All previous subject allotments should be **preserved** with `Is_valid = 0`.
-- New subject requests are stored in a separate `SubjectRequest` table.
-- When processing requests:
-  - If the subject is **different** from the current valid subject, insert the new subject and update old to invalid.
-  - If the student is **not present** in the allotments table, insert the record as a valid entry directly.
+Whenever a student changes their elective, the system should:
+- Keep a record of the newly chosen subject (as active)
+- Keep previous subjects in the database but mark them as inactive
 
----
+Two main tables are used:
+1. SubjectAllotments – records all subject allocations with status
+2. SubjectRequest – stores the student's latest request for a subject
 
-## 🏗️ Database Structure
+----------------------------------------------
+🎯 OBJECTIVES
+----------------------------------------------
+- Track changes in elective subjects
+- Maintain historical data of all subjects allotted
+- Ensure only one subject is marked as active per student
+- Automatically process subject requests
 
-### 🔹 Table: `SubjectAllotments`
-| Column     | Data Type   | Description                         |
-|------------|-------------|-------------------------------------|
-| StudentId  | VARCHAR     | Unique identifier for student       |
-| SubjectId  | VARCHAR     | Code of the elective subject        |
-| Is_valid   | BIT         | 1 = active subject, 0 = old subject |
+----------------------------------------------
+📂 DATABASE STRUCTURE
+----------------------------------------------
+Table: SubjectAllotments
+Columns:
+- StudentId (VARCHAR) : unique student identifier
+- SubjectId (VARCHAR) : elective subject code
+- Is_valid (BIT)      : 1 if currently active, 0 if inactive
 
-### 🔹 Table: `SubjectRequest`
-| Column     | Data Type   | Description                         |
-|------------|-------------|-------------------------------------|
-| StudentId  | VARCHAR     | Unique identifier for student       |
-| SubjectId  | VARCHAR     | New subject requested               |
+Table: SubjectRequest
+Columns:
+- StudentId (VARCHAR)
+- SubjectId (VARCHAR)
 
----
-
-## 📥 Sample Data
-
-### SubjectAllotments (Before Procedure Execution)
+----------------------------------------------
+🗃️ SAMPLE DATA BEFORE PROCESSING
+----------------------------------------------
+SubjectAllotments:
 +------------+-----------+----------+
-| StudentId | SubjectId | Is_valid |
+| StudentId  | SubjectId | Is_valid |
 +------------+-----------+----------+
-| 159103036 | PO1491 | 1 |
-| 159103036 | PO1492 | 0 |
-| 159103036 | PO1493 | 0 |
-| 159103036 | PO1494 | 0 |
-| 159103036 | PO1495 | 0 |
+| 159103036  | PO1491    |    1     |
+| 159103036  | PO1492    |    0     |
+| 159103036  | PO1493    |    0     |
+| 159103036  | PO1494    |    0     |
+| 159103036  | PO1495    |    0     |
 +------------+-----------+----------+
 
-
-### SubjectRequest
+SubjectRequest:
 +------------+-----------+
-| StudentId | SubjectId |
+| StudentId  | SubjectId |
 +------------+-----------+
-| 159103036 | PO1496 |
-| 159103037 | PO1497 |
+| 159103036  | PO1496    |
+| 159103037  | PO1497    |
 +------------+-----------+
 
+----------------------------------------------
+⚙️ STORED PROCEDURE WORKFLOW
+----------------------------------------------
+The stored procedure "ProcessSubjectRequests" does the following:
+1. Iterates through all entries in the SubjectRequest table
+2. For each student:
+   a) If the student exists in SubjectAllotments:
+       - Check if requested subject is different from current active subject
+       - If yes, mark current subject as inactive and insert new subject as active
+   b) If the student doesn't exist in SubjectAllotments:
+       - Insert the new subject as active
+3. Preserves history of all subject changes
 
----
-
-## ⚙️ Stored Procedure Logic
-
-
-CALL ProcessSubjectRequests();
-
-The stored procedure processes all rows in SubjectRequest:
-
-If the student's current subject is different:
-Marks old subject as Is_valid = 0
-Inserts new subject as Is_valid = 1
-If the student is new:
-Directly inserts the subject with Is_valid = 1
-
+----------------------------------------------
+🧾 FINAL OUTPUT AFTER PROCESSING
+----------------------------------------------
+SubjectAllotments:
 +------------+-----------+----------+
 | StudentId  | SubjectId | Is_valid |
 +------------+-----------+----------+
@@ -82,9 +94,4 @@ Directly inserts the subject with Is_valid = 1
 | 159103037  | PO1497    |    1     |
 +------------+-----------+----------+
 
-
-
-✍️ Author
-Prathamesh Lad
-B.E. Computer Science 
 
